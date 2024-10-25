@@ -13,15 +13,17 @@ import React, {
 interface ModalContextType {
   open: boolean;
   setOpen: (open: boolean) => void;
+  closeModal: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const closeModal = () => setOpen(false);
 
   return (
-    <ModalContext.Provider value={{ open, setOpen }}>
+    <ModalContext.Provider value={{ open, setOpen, closeModal }}>
       {children}
     </ModalContext.Provider>
   );
@@ -103,7 +105,7 @@ export const ModalBody = ({
           <motion.div
             ref={modalRef}
             className={cn(
-              "h-full max-h-[90%] md:max-w-[80%] bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden",
+              "h-full w-full bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden",
               className
             )}
             initial={{
@@ -129,7 +131,6 @@ export const ModalBody = ({
               damping: 15,
             }}
           >
-            <CloseIcon />
             {children}
           </motion.div>
         </motion.div>
@@ -146,7 +147,9 @@ export const ModalContent = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex flex-col flex-1 ", className)}>{children}</div>
+    <div className={cn("flex flex-col flex-1 overflow-y-auto ", className)}>
+      {children}
+    </div>
   );
 };
 
@@ -160,7 +163,7 @@ export const ModalFooter = ({
   return (
     <div
       className={cn(
-        "flex justify-end p-4 bg-gray-100 dark:bg-neutral-900",
+        "flex justify-end p-4 sticky  bg-gray-100 dark:bg-neutral-900",
         className
       )}
     >
@@ -188,13 +191,15 @@ const Overlay = ({ className }: { className?: string }) => {
   );
 };
 
-const CloseIcon = () => {
-  const { setOpen } = useModal();
+export const closeModal = () => {
+  const { closeModal } = useModal();
+  closeModal();
+};
+
+export const CloseIcon = () => {
+  const { closeModal } = useModal();
   return (
-    <button
-      onClick={() => setOpen(false)}
-      className="absolute top-4 right-4 group"
-    >
+    <button onClick={closeModal} className="group">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"

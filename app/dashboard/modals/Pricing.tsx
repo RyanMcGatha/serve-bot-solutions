@@ -13,12 +13,8 @@ export default function Pricing({
   const [pro, setPro] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
-  useEffect(() => {
-    console.log(free, basic, pro);
-  }, [free, basic, pro]);
-
   return (
-    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
+    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-950  h-full w-full">
       <>
         <Heading selected={selected} setSelected={setSelected} />
         <PriceCards
@@ -168,12 +164,15 @@ const PriceCards = ({
       className={clsx(
         "w-full p-6 border  border-zinc-700 dark:border-zinc-400 rounded-xl",
         free
-          ? "dark:bg-indigo-500 text-white"
+          ? "bg-indigo-500 text-white"
           : "bg-gradient-to-br from-zinc-100/50 to-zinc-200 dark:from-dorkz2 dark:to-zinc-950"
       )}
     >
       <p className="text-2xl font-bold mb-2">Free</p>
-      <p className="text-lg mb-6">Everything to start</p>
+      <p className="text-lg mb-6">
+        Perfect for small restaurant owners exploring AI assistance. Always
+        free.
+      </p>
       <p className="text-6xl font-bold mb-8">
         $0<span className="font-normal text-xl">/month</span>
       </p>
@@ -191,7 +190,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">10,000 requests/month</span>
+        <span className="text-base">100 requests/month</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -207,7 +206,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">Basic in app support</span>
+        <span className="text-base">1 AI Agent</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -223,7 +222,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">2 users on your account</span>
+        <span className="text-base">Email Support</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -239,7 +238,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">1 workspace</span>
+        <span className="text-base">Basic Reporting</span>
       </div>
 
       <motion.button
@@ -262,12 +261,14 @@ const PriceCards = ({
       className={clsx(
         "w-full p-6 border  border-zinc-700 dark:border-zinc-400 rounded-xl",
         basic
-          ? "dark:bg-indigo-500 text-white"
+          ? "bg-indigo-500 text-white"
           : "bg-gradient-to-br from-zinc-100/50 to-zinc-200 dark:from-dorkz2 dark:to-zinc-950"
       )}
     >
-      <p className="text-2xl font-bold mb-2">Professional</p>
-      <p className="text-lg mb-6">Everything to launch</p>
+      <p className="text-2xl font-bold mb-2">Basic</p>
+      <p className="text-lg mb-6">
+        For restaurants seeking to improve operations with advanced AI Agents.
+      </p>
       <div className="overflow-hidden mb-8">
         <AnimatePresence mode="wait">
           {selected === "M" ? (
@@ -279,7 +280,7 @@ const PriceCards = ({
               transition={{ ease: "linear", duration: 0.25 }}
               className="text-6xl font-bold text-indigo-500"
             >
-              <span>$49</span>
+              <span>$20</span>
               <span className="font-normal text-xl">/month</span>
             </motion.p>
           ) : (
@@ -291,7 +292,7 @@ const PriceCards = ({
               transition={{ ease: "linear", duration: 0.25 }}
               className="text-6xl font-bold text-indigo-500"
             >
-              <span>$39</span>
+              <span>$15</span>
               <span className="font-normal text-xl">/month</span>
             </motion.p>
           )}
@@ -311,7 +312,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">100,000 requests/month</span>
+        <span className="text-base">Unlimited Requests</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -327,7 +328,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">Email in app support</span>
+        <span className="text-base">Access to All AI Agents</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -343,7 +344,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">10 users on your account</span>
+        <span className="text-base">Email Support</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -359,13 +360,13 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">10 work spaces</span>
+        <span className="text-base">Basic Reporting</span>
       </div>
 
       <motion.button
         whileHover={{ scale: 1.015 }}
         whileTap={{ scale: 0.985 }}
-        className="w-full py-4 mt-8 font-semibold bg-indigo-500 text-white rounded-lg uppercase"
+        className="w-full py-4 mt-8 font-semibold bg-black text-white rounded-lg uppercase"
         onClick={() => {
           setFree && setFree(false);
           setPro && setPro(false);
@@ -382,12 +383,15 @@ const PriceCards = ({
       className={clsx(
         "w-full p-6 border  border-zinc-700 dark:border-zinc-400 rounded-xl",
         pro
-          ? "dark:bg-indigo-500 text-white"
+          ? "bg-indigo-500 text-white"
           : "bg-gradient-to-br from-zinc-100/50 to-zinc-200 dark:from-dorkz2 dark:to-zinc-950"
       )}
     >
-      <p className="text-2xl font-bold mb-2">Basic</p>
-      <p className="text-lg mb-6">Everything to go public</p>
+      <p className="text-2xl font-bold mb-2">Pro</p>
+      <p className="text-lg mb-6">
+        For restaurants looking to tailor their AI Agents specifically for their
+        business.
+      </p>
       <div className="overflow-hidden mb-8">
         <AnimatePresence mode="wait">
           {selected === "M" ? (
@@ -399,7 +403,7 @@ const PriceCards = ({
               transition={{ ease: "linear", duration: 0.25 }}
               className="text-6xl font-bold"
             >
-              <span>$499</span>
+              <span>$40</span>
               <span className="font-normal text-xl">/month</span>
             </motion.p>
           ) : (
@@ -411,7 +415,7 @@ const PriceCards = ({
               transition={{ ease: "linear", duration: 0.25 }}
               className="text-6xl font-bold"
             >
-              <span>$399</span>
+              <span>$30</span>
               <span className="font-normal text-xl">/month</span>
             </motion.p>
           )}
@@ -431,7 +435,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">10,000,000 requests/month</span>
+        <span className="text-base">Unlimited Requests</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -447,7 +451,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">Phone support</span>
+        <span className="text-base">Access to All AI Agents</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -463,7 +467,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">∞ users on your account</span>
+        <span className="text-base">Custom AI Agents</span>
       </div>
       <div className="flex items-center gap-2 mb-2">
         <svg
@@ -479,7 +483,7 @@ const PriceCards = ({
             fill="black"
           />
         </svg>
-        <span className="text-base">∞ work spaces</span>
+        <span className="text-base">Advanced Reporting</span>
       </div>
 
       <motion.button

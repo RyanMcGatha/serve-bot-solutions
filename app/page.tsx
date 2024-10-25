@@ -12,8 +12,11 @@ import { MaxWidthWrapper } from "./components/utils/MaxWidthWrapper";
 
 export default function Home() {
   return (
-    <HeroHighlight style={{ height: "400vh", width: "100vw" }}>
+    <HeroHighlight
+      style={{ height: "700vh", width: "100vw", overflow: "hidden" }}
+    >
       <Nav />
+
       <Hero />
       <HeroGrid />
       <Pricing />

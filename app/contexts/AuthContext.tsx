@@ -54,12 +54,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(response.data.data.user); // Set user data if valid
       } else {
         setUser(null); // Clear user if not authenticated
-        router.push("/signin");
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to fetch user info");
       setUser(null);
-      router.push("/signin");
     } finally {
       setLoading(false);
     }
@@ -134,6 +132,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const handleGitHubAuth = () => {
     window.location.href = "/api/auth/github"; // Redirect to the GitHub OAuth route
   };
+
+  useEffect(() => {
+    session();
+  }, []);
 
   const value = {
     user,

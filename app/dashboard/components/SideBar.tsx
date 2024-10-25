@@ -1,4 +1,6 @@
+"use client";
 import React, { Dispatch, SetStateAction, useState } from "react";
+
 import { IconType } from "react-icons";
 import {
   FiBarChart,
@@ -14,8 +16,9 @@ import {
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuth } from "@/app/contexts/AuthContext";
-
+import { useRouter } from "next/navigation";
 export const Sidebar = () => {
+  const router = useRouter();
   const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState("Dashboard");
   const { logout } = useAuth();
@@ -37,6 +40,7 @@ export const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
+          link={() => (window.location.href = "/dashboard")}
         />
 
         <Option
@@ -62,6 +66,7 @@ const Option = ({
   open,
   notifs,
   logout,
+  link,
 }: {
   Icon: IconType;
   title: string;
@@ -70,6 +75,7 @@ const Option = ({
   open: boolean;
   notifs?: number;
   logout?: () => void;
+  link?: () => void;
 }) => {
   return (
     <motion.button
@@ -77,6 +83,7 @@ const Option = ({
       onClick={() => {
         setSelected(title);
         if (logout) logout();
+        if (link) link();
       }}
       className={`relative flex h-10 w-full items-center rounded-md transition-colors ${
         selected === title
@@ -121,9 +128,10 @@ const Option = ({
 };
 
 const TitleSection = ({ open }: { open: boolean }) => {
+  const { user } = useAuth();
   return (
     <div className="mb-3 border-b border-zinc-900 pb-3 dark:border-zinc-300">
-      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-zinc-900 hover:text-white dark:hover:bg-zinc-300 dark:hover:text-zinc-900">
+      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors">
         <div className="flex items-center gap-2">
           <Logo />
           {open && (
@@ -134,10 +142,10 @@ const TitleSection = ({ open }: { open: boolean }) => {
               transition={{ delay: 0.125 }}
             >
               <span className="block text-xs font-semibold text-zinc-900 dark:text-zinc-300">
-                TomIsLoading
+                {user?.email}
               </span>
               <span className="block text-xs text-zinc-900 dark:text-zinc-300">
-                Pro Plan
+                {user?.subscription} Plan
               </span>
             </motion.div>
           )}

@@ -48,6 +48,7 @@ model App {
   imgUrl       String        // New field for the app's image URL
   isCustom     Boolean        @default(false) // True for custom apps
   isFree       Boolean        @default(false) // True for free apps
+  link         String?
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

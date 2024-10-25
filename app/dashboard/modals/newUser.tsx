@@ -1,6 +1,9 @@
 "use client";
+import { useModal } from "../components/animated-modal";
 import SubscriptionForm from "./SubscriptionForm";
-import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "@/app/contexts/AuthContext";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Modal,
   ModalBody,
@@ -9,30 +12,52 @@ import {
   ModalTrigger,
 } from "../components/animated-modal";
 import Pricing from "./Pricing";
-import Image from "next/image";
+import { Review } from "./review";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { FreeTier } from "./freeTier";
 
-export function NewUserModal() {
+export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
+  const { open, setOpen, closeModal } = useModal();
+  const { user } = useAuth();
   const [stepsComplete, setStepsComplete] = useState(0);
+  const [selectedApp, setSelectedApp] = useState<any>(null);
 
   const numSteps = 4;
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
 
-  const handleSetStep = (num: -1 | 1) => {
-    // Calculate the new step
+  const handleSetStep = async (num: -1 | 1) => {
     const newStep = stepsComplete + num;
-
-    // Boundary check to prevent going below 0 or above numSteps
     if (newStep < 0 || newStep > numSteps) {
       return;
     }
 
-    // Set stepsComplete to the calculated newStep
     setStepsComplete(newStep);
+    if (newStep === 4) {
+      const res = await addUserAppAccess(selectedApp.id);
+      if (res?.status === 200) {
+        onCompleted();
+      }
+    }
   };
-  console.log(stepsComplete);
+
+  async function addUserAppAccess(appId: string) {
+    try {
+      const response = await axios.post("/api/apps/setUserAppAccess", {
+        userId: user?.id,
+        appId,
+      });
+
+      console.log("User App Access created:", response);
+      return response;
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Error:", error.response.data.error);
+      } else {
+        console.error("Request failed:", error.message);
+      }
+    }
+  }
 
   return (
     <div className="py-40 flex items-center justify-center">
@@ -47,35 +72,50 @@ export function NewUserModal() {
         </ModalTrigger>
         <ModalBody>
           <ModalContent>
-            {selectedPlan && stepsComplete === 1 && (
-              <CheckoutScreen
-                plan={selectedPlan}
-                onSuccess={() => handleSetStep(1)}
-              />
-            )}
-            {stepsComplete === 0 && (
-              <Pricing setSelectedPlan={(plan: any) => setSelectedPlan(plan)} />
-            )}
-            {stepsComplete === 2 && <FreeTier />}
+            {selectedPlan && stepsComplete === 1 ? (
+              selectedPlan === "free" ? (
+                (setStepsComplete(2),
+                (<FreeTier onSelect={(app) => setSelectedApp(app)} />))
+              ) : (
+                <CheckoutScreen
+                  plan={selectedPlan}
+                  onSuccess={() => handleSetStep(1)}
+                />
+              )
+            ) : stepsComplete === 0 ? (
+              <Pricing setSelectedPlan={setSelectedPlan} />
+            ) : stepsComplete === 2 ? (
+              <FreeTier onSelect={(app) => setSelectedApp(app)} />
+            ) : stepsComplete === 3 ? (
+              <Review selectedApp={selectedApp} />
+            ) : null}
           </ModalContent>
-          <ModalFooter className="gap-4">
+          <ModalFooter className="gap-4 z-50">
             <Steps numSteps={numSteps} stepsComplete={stepsComplete} />
-
             <button
               onClick={() => {
                 handleSetStep(-1);
+                setSelectedApp(null);
+                if (stepsComplete === 2 && selectedPlan === "free") {
+                  setStepsComplete(0);
+                }
               }}
-              disabled={stepsComplete === 0}
+              disabled={
+                stepsComplete === 0 ||
+                (stepsComplete === 4 && selectedPlan === "free")
+              }
               className="px-2 py-1 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm w-28"
             >
               Previous
             </button>
             <button
               onClick={() => handleSetStep(1)}
-              disabled={selectedPlan === null}
+              disabled={!selectedPlan || (!selectedApp && stepsComplete === 2)}
               className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28"
             >
-              Next
+              {stepsComplete === 3 && selectedPlan === "free"
+                ? "Confirm App"
+                : "Next"}
             </button>
           </ModalFooter>
         </ModalBody>

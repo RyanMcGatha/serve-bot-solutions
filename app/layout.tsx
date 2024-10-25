@@ -3,7 +3,7 @@ import { AuthProvider } from "@/app/contexts/AuthContext";
 import "./globals.css";
 import { useState } from "react";
 import { ToastProvider } from "@/app/contexts/ToastContext";
-
+import { ModalProvider } from "./dashboard/components/animated-modal";
 export default function RootLayout({
   children,
 }: {
@@ -12,12 +12,14 @@ export default function RootLayout({
   const [darkMode, setDarkMode] = useState(true);
 
   return (
-    <AuthProvider>
-      <html lang="en">
-        <body className="h-screen w-screen ">
-          <ToastProvider>{children}</ToastProvider>
-        </body>
-      </html>
-    </AuthProvider>
+    <html lang="en">
+      <body className="h-screen w-screen ">
+        <AuthProvider>
+          <ModalProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </ModalProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

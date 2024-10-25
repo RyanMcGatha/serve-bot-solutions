@@ -3,15 +3,34 @@ import Image from "next/image";
 import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "../hooks/use-outside-click";
+import axios from "axios";
+import { useAuth } from "@/app/contexts/AuthContext";
 
-export function FreeTier() {
+export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
   const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
     null
   );
-  console.log(active?.title);
   const [cards, setCards] = useState<any[]>([]);
   const id = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const [selectedApp, setSelectedApp] = useState<any>(null);
+  const { user } = useAuth();
+  async function addUserAppAccess(appId: string) {
+    try {
+      const response = await axios.post("/api/apps/setUserAppAccess", {
+        userId: user?.id,
+        appId,
+      });
+
+      console.log("User App Access created:", response.data);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Error:", error.response.data.error);
+      } else {
+        console.error("Request failed:", error.message);
+      }
+    }
+  }
 
   const fetchApps = async () => {
     const res = await fetch("/api/apps/fetchAllApps");
@@ -45,13 +64,19 @@ export function FreeTier() {
 
   return (
     <>
+      <div className="flex flex-col items-center p-8 w-full max-w-xl mx-auto text-center space-y-6">
+        <h2 className="text-3xl font-bold text-center w-full">Select an App</h2>
+        <p className="text-xl">
+          Choose the app you want to use with your account.
+        </p>
+      </div>
       <AnimatePresence>
         {active && typeof active === "object" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 h-full w-full z-10"
+            className="fixed inset-0 bg-black/20  w-full z-0"
           />
         )}
       </AnimatePresence>
@@ -111,17 +136,20 @@ export function FreeTier() {
                     </motion.p>
                   </div>
 
-                  <motion.a
+                  <motion.button
                     layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    href={active.ctaLink}
-                    target="_blank"
+                    onClick={() => {
+                      setSelectedApp(active);
+                      setActive(null);
+                      onSelect(active);
+                    }}
                     className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
                   >
-                    {active.ctaText}
-                  </motion.a>
+                    Select
+                  </motion.button>
                 </div>
                 <div className="pt-4 relative px-4">
                   <motion.div
@@ -141,15 +169,19 @@ export function FreeTier() {
           </div>
         ) : null}
       </AnimatePresence>
-      <ul className="max-w-2xl mx-auto w-full h-full pt-20 grid grid-cols-1 md:grid-cols-2 items-start gap-4">
+      <ul className="max-w-7xl mx-auto w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-start gap-4">
         {cards.map((card, index) => (
           <motion.div
             layoutId={`card-${card.title}-${id}`}
             key={index}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col  hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
+            onClick={() => {
+              setActive(card);
+            }}
+            className={`p-4 flex flex-col hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer ${
+              selectedApp?.title === card.title ? "bg-indigo-600" : ""
+            }`}
           >
-            <div className="flex gap-4 flex-col  w-full">
+            <div className="flex gap-4 flex-col w-full">
               <motion.div layoutId={`image-${card.title}-${id}`}>
                 <Image
                   width={100}
@@ -164,13 +196,13 @@ export function FreeTier() {
                   layoutId={`title-${card.title}-${id}`}
                   className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left text-base"
                 >
-                  {card.title}
+                  {card.name}
                 </motion.h3>
                 <motion.p
                   layoutId={`description-${card.description}-${id}`}
                   className="text-neutral-600 dark:text-neutral-400 text-center md:text-left text-base"
                 >
-                  {card.description}
+                  {card.title}
                 </motion.p>
               </div>
             </div>

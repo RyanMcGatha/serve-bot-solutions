@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
+
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -10,7 +12,7 @@ import axios from "axios";
 import { BubbleButton } from "@/app/components/buttons/BubbleButton";
 
 const stripePromise = loadStripe(
-  process.env.DEV_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 const SubscriptionForm = ({
@@ -20,15 +22,37 @@ const SubscriptionForm = ({
   plan: any;
   onSuccess: () => void;
 }) => {
+  const { user } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // Success message state
+  const [successMessage, setSuccessMessage] = useState("");
   const priceId =
     plan === "basic"
-      ? process.env.NEXT_PUBLIC_BASIC_PRICE_ID
-      : process.env.NEXT_PUBLIC_PRO_PRICE_ID;
+      ? process.env.NEXT_PUBLIC_DEV_BASIC_PRICE_ID
+      : process.env.NEXT_PUBLIC_DEV_PRO_PRICE_ID;
+
+  async function updateUserSubscription() {
+    try {
+      const subscriptionTier = plan.toUpperCase();
+      const response = await axios.post("/api/user/setSubscription", {
+        userId: user?.id,
+        subscriptionTier,
+      });
+      console.log("Updated user:", response.data);
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        console.error(
+          "Error updating subscription:",
+          error.response.data.error
+        );
+      } else {
+        console.error("Error making request:", error.message);
+      }
+    }
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -60,7 +84,7 @@ const SubscriptionForm = ({
         setSuccessMessage(
           "Subscription successful! Welcome to the " + plan + " plan."
         );
-
+        updateUserSubscription();
         onSuccess();
       } else {
         setErrorMessage("Subscription failed. Please try again.");
