@@ -38,12 +38,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine access based on the user's subscription tier
-    if (user.subscription === SubscriptionTier.NONE) {
-      return NextResponse.json(
-        { error: "User does not have a subscription to access any apps" },
-        { status: 403 }
-      );
-    }
 
     if (user.subscription === SubscriptionTier.FREE && !app.isFree) {
       return NextResponse.json(
