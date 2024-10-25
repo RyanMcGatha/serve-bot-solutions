@@ -129,7 +129,7 @@ export async function GET(request: Request) {
   );
 
   // Set the token in a cookie
-  const response = NextResponse.redirect("http://localhost:3000/dashboard");
+  const response = NextResponse.redirect("https://servebot.tech/dashboard");
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
