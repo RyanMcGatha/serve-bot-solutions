@@ -110,7 +110,11 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
             </button>
             <button
               onClick={() => handleSetStep(1)}
-              disabled={!selectedPlan || (!selectedApp && stepsComplete === 2)}
+              disabled={
+                !selectedPlan ||
+                (!selectedApp && stepsComplete === 2) ||
+                stepsComplete === 1
+              }
               className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28"
             >
               {stepsComplete === 3 && selectedPlan === "free"
