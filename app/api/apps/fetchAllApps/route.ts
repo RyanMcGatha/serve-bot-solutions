@@ -18,5 +18,8 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching apps:", error);
     // Respond with a 500 status code in case of error
     return new NextResponse("Failed to fetch apps", { status: 500 });
+  } finally {
+    // Disconnect Prisma client to clean up resources
+    await prisma.$disconnect();
   }
 }
