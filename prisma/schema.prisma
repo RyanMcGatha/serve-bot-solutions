@@ -1,0 +1,81 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  name             String?
+  password_hash    String?
+  imageUrl         String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  subscription     SubscriptionTier @default(NONE)
+  accounts         Account[]
+  appAccess        UserAppAccess[]
+}
+
+model Account {
+  id                String    @id @default(cuid())
+  provider          String
+  providerAccountId String
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         Int?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+
+
+model App {
+  id           String         @id @default(cuid())
+  name         String
+  title        String         // New field for the app's title
+  description  String        // Existing field for optional description
+  imgUrl       String        // New field for the app's image URL
+  isCustom     Boolean        @default(false) // True for custom apps
+  isFree       Boolean        @default(false) // True for free apps
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  userAccess   UserAppAccess[] // Opposite relation for user access
+}
+
+
+model UserAppAccess {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  app        App      @relation(fields: [appId], references: [id])
+  appId      String
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum SubscriptionTier {
+  NONE
+  FREE
+  BASIC
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
