@@ -36,10 +36,32 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
     if (newStep === 4) {
       const res = await addUserAppAccess(selectedApp.id);
       if (res?.status === 200) {
+        await updateUserSubscription();
         onCompleted();
       }
     }
   };
+
+  async function updateUserSubscription() {
+    try {
+      const subscriptionTier = selectedPlan.toUpperCase();
+      const response = await axios.post("/api/user/setSubscription", {
+        userId: user?.id,
+        subscriptionTier,
+      });
+      console.log("Updated user:", response.data);
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        console.error(
+          "Error updating subscription:",
+          error.response.data.error
+        );
+      } else {
+        console.error("Error making request:", error.message);
+      }
+    }
+  }
 
   async function addUserAppAccess(appId: string) {
     try {
