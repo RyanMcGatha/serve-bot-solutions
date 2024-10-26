@@ -43,9 +43,6 @@ export const SocialOptions = ({ isSignup }: { isSignup: boolean }) => {
           <SiGithub />
         </BubbleButton>
       </div>
-      <BubbleButton className="flex w-full justify-center py-3">
-        {isSignup ? "Sign up with SSO" : "Sign in with SSO"}
-      </BubbleButton>
     </div>
   );
 };
