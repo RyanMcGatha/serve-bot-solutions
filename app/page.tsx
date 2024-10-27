@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { HeroHighlight } from "./components/ui/hero-highlight";
 import { NeuHero } from "./components/NeuHero";
@@ -12,13 +13,23 @@ import { MaxWidthWrapper } from "./components/utils/MaxWidthWrapper";
 import { FadeIn } from "./components/fadein";
 
 export default function Home() {
-  const isSmallViewport =
-    typeof window !== "undefined" && window.innerWidth < 1025;
+  const [isSmallViewport, setIsSmallViewport] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallViewport(window.innerWidth < 1024);
+    };
+
+    handleResize(); // Set initial state based on current viewport
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <HeroHighlight
       style={{
-        height: isSmallViewport ? "770vh" : "500vh",
+        height: isSmallViewport ? "680vh" : "420vh",
         width: "100vw",
         overflow: "hidden",
       }}
