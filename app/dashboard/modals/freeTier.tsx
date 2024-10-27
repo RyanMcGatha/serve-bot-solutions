@@ -63,7 +63,7 @@ export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
   useOutsideClick(ref, () => setActive(null));
 
   return (
-    <div className="flex flex-col items-center w-full max-w-7xl mx-auto text-center space-y-6 p-6">
+    <div className="flex flex-col items-center overflow-y-auto w-full max-w-7xl mx-auto text-center space-y-6 p-6">
       <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white">
         Select an App
       </h2>
@@ -84,10 +84,10 @@ export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
 
       <AnimatePresence>
         {active && (
-          <div className="fixed inset-0 flex items-center justify-center z-20 p-4">
+          <div className="fixed inset-0 overflow-y-auto flex items-center justify-center z-50 p-4">
             <motion.button
               key={`close-button-${active.title}-${id}`}
-              className="absolute top-4 right-4 text-gray-800 dark:text-white bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-lg"
+              className="absolute top-4 right-4 text-gray-800 dark:text-white  bg-white rounded-full h-8 w-8 flex z-50 items-center justify-center shadow-lg"
               onClick={() => setActive(null)}
             >
               <CloseIcon />
@@ -95,7 +95,7 @@ export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
             <motion.div
               layoutId={`card-${active.title}-${id}`}
               ref={ref}
-              className="bg-white dark:bg-neutral-900 rounded-lg shadow-2xl overflow-hidden w-full max-w-xl p-6"
+              className="bg-white dark:bg-neutral-900 rounded-lg shadow-2xl overflow-hidden w-full max-w-xl sm:p-6"
             >
               <motion.div
                 layoutId={`image-${active.title}-${id}`}
@@ -119,14 +119,14 @@ export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
                 </motion.h3>
                 <motion.p
                   layoutId={`description-${active.description}-${id}`}
-                  className="mt-2 text-gray-600 dark:text-gray-400"
+                  className="mt-2 text-gray-600 dark:text-gray-400 w-full"
                 >
                   {active.description}
                 </motion.p>
-                <div className="mt-6">
+                <div className="mt-2">
                   <motion.div
                     layout
-                    className="text-zinc-700 dark:text-zinc-300 text-sm h-fit overflow-auto"
+                    className="text-zinc-700 dark:text-zinc-300 text-sm  overflow-auto"
                   >
                     {typeof active.content === "function"
                       ? active.content()
@@ -138,7 +138,7 @@ export function FreeTier({ onSelect }: { onSelect: (active: any) => void }) {
                       setActive(null);
                       onSelect(active);
                     }}
-                    className="mt-6 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg"
+                    className="mt-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg"
                   >
                     Select
                   </button>

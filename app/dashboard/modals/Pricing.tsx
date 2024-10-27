@@ -14,7 +14,7 @@ export default function Pricing({
   const [showCheckout, setShowCheckout] = useState(false);
 
   return (
-    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-950 p-4 w-full h-full flex flex-col justify-around">
+    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-950 p-4 w-full h-full overflow-y-auto ">
       <>
         <Heading selected={selected} setSelected={setSelected} />
         <PriceCards

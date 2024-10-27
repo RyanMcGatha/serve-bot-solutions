@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function Review({ selectedApp }: { selectedApp: any }) {
   return (
-    <div className="flex flex-col items-center p-8 w-full h-full text-center space-y-8 ">
+    <div className=" overflow-y-auto p-2 w-full h-full text-center space-y-8 ">
       <h2 className="text-4xl font-semibold text-zinc-800 dark:text-zinc-200">
         Review Your Selection
       </h2>
