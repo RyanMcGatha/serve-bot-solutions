@@ -14,7 +14,7 @@ export default function Pricing({
   const [showCheckout, setShowCheckout] = useState(false);
 
   return (
-    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-950  h-full w-full">
+    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-950 p-4 w-full h-full flex flex-col justify-around">
       <>
         <Heading selected={selected} setSelected={setSelected} />
         <PriceCards
@@ -63,33 +63,14 @@ interface HeadingProps {
 
 const Heading = ({ selected, setSelected }: HeadingProps) => {
   return (
-    <div className="my-12  relative z-10">
+    <div className="  relative z-10">
       <h3 className="font-semibold text-5xl lg:text-7xl text-center mb-6">
         Pricing plans
       </h3>
-      <p className="text-center mx-auto max-w-lg mb-8">
-        Lorem ipsum dolor sit amet consectetur. Pulvinar eu rhoncus tincidunt
-        eget mattis netus ridiculus.
+      <p className="text-center text-xl mx-auto max-w-lg mb-8">
+        Choose the plan that best suits your needs. <br /> Select your plan and
+        click next!
       </p>
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={() => setSelected("M")}
-          className={selected === "M" ? SELECTED_STYLES : DESELECTED_STYLES}
-        >
-          Monthly
-          {selected === "M" && <BackgroundShift />}
-        </button>
-        <div className="relative">
-          <button
-            onClick={() => setSelected("A")}
-            className={selected === "A" ? SELECTED_STYLES : DESELECTED_STYLES}
-          >
-            Annual
-            {selected === "A" && <BackgroundShift />}
-          </button>
-          <CTAArrow />
-        </div>
-      </div>
     </div>
   );
 };
@@ -158,7 +139,7 @@ const PriceCards = ({
   setPro,
   setSelectedPlan,
 }: PriceCardProps) => (
-  <div className="flex flex-col lg:flex-row gap-8 lg:gap-4 w-full max-w-6xl mx-auto relative z-10">
+  <div className="flex flex-col lg:flex-row gap-8 lg:gap-4 w-full max-w-6xl mx-auto relative z-10 pb-10 ">
     {/* FREE */}
     <div
       className={clsx(
@@ -278,7 +259,7 @@ const PriceCards = ({
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
               transition={{ ease: "linear", duration: 0.25 }}
-              className="text-6xl font-bold text-indigo-500"
+              className="text-6xl font-bold "
             >
               <span>$20</span>
               <span className="font-normal text-xl">/month</span>

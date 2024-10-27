@@ -29,7 +29,7 @@ export const MiniCard2 = () => {
             </div>
           </div>
           <p>
-            <span className="font-semibold text-blue-300">@your_company</span>
+            <span className="font-semibold text-blue-300">@serve_bot</span>
             &apos;s AI has transformed our daily operations—everything just runs
             smoother now! 🙌
           </p>

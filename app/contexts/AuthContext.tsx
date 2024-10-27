@@ -13,7 +13,7 @@ interface AuthContextProps {
   user: User | null;
   login: (email: string, password: string) => Promise<Response | null>;
   signup: (email: string, password: string) => Promise<Response | null>;
-  logout: () => void;
+  logout: () => Promise<void>;
   handleGoogleAuth: () => void;
   handleGitHubAuth: () => void;
   session: () => Promise<void>;
@@ -47,13 +47,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await axios.get<Response>("/api/session", {
-        withCredentials: true, // Ensures cookies are sent with the request
+        withCredentials: true,
       });
-
       if (response.data.success) {
-        setUser(response.data.data.user); // Set user data if valid
+        setUser(response.data.data.user);
       } else {
-        setUser(null); // Clear user if not authenticated
+        setUser(null);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to fetch user info");
@@ -64,7 +63,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Login function
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<Response | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -72,18 +74,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
       });
-
-      setLoading(false);
-      router.push("/dashboard"); // Redirect to dashboard after successful login
+      if (response.data.success) {
+        setUser(response.data.data.user);
+        router.push("/dashboard");
+        return response.data;
+      } else {
+        setError(response.data.error || "Login failed");
+        return response.data;
+      }
     } catch (err: any) {
-      setLoading(false);
       setError(err.response?.data?.error || "Something went wrong");
-      return err.response?.data;
+      return null;
+    } finally {
+      setLoading(false);
     }
   };
 
   // Signup function
-  const signup = async (email: string, password: string) => {
+  const signup = async (
+    email: string,
+    password: string
+  ): Promise<Response | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -91,46 +102,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
       });
-
-      setUser(response.data.data.user); // Set user data after successful signup
-      setLoading(false);
-      router.push("/dashboard");
-    } catch (err: any) {
-      setLoading(false);
-      setError(err.response?.data?.error || "Something went wrong");
-      return err.response?.data;
-    }
-  };
-
-  // Logout function
-  const logout = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post("/api/logout");
-
-      if (response.status === 200) {
-        setUser(null); // Clear user on successful logout
-        router.push("/");
+      if (response.data.success) {
+        setUser(response.data.data.user);
+        router.push("/dashboard");
+        return response.data;
       } else {
-        setError("Logout failed");
-        console.error("Logout failed with status:", response.status);
+        setError(response.data.error || "Signup failed");
+        return response.data;
       }
     } catch (err: any) {
-      setError("An error occurred during logout");
-      return err.response?.data;
+      setError(err.response?.data?.error || "Something went wrong");
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Google OAuth sign-in
-  const handleGoogleAuth = () => {
-    window.location.href = "/api/auth/google"; // Redirect to the Google OAuth route
+  // Logout function
+  const logout = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      const response = await axios.post("/api/logout");
+      if (response.status === 200) {
+        setUser(null);
+        router.push("/");
+      } else {
+        setError("Logout failed");
+      }
+    } catch (err: any) {
+      setError("An error occurred during logout");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle GitHub OAuth sign-in
+  // Google and GitHub OAuth handlers
+  const handleGoogleAuth = () => {
+    window.location.href = "/api/auth/google";
+  };
   const handleGitHubAuth = () => {
-    window.location.href = "/api/auth/github"; // Redirect to the GitHub OAuth route
+    window.location.href = "/api/auth/github";
   };
 
   useEffect(() => {
@@ -144,7 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     handleGoogleAuth,
     handleGitHubAuth,
-    session, // Expose the checkUserInfo function
+    session,
     loading,
     error,
   };

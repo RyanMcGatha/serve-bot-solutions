@@ -30,8 +30,8 @@ const SubscriptionForm = ({
   const [successMessage, setSuccessMessage] = useState("");
   const priceId =
     plan === "basic"
-      ? process.env.NEXT_PUBLIC_DEV_BASIC_PRICE_ID
-      : process.env.NEXT_PUBLIC_DEV_PRO_PRICE_ID;
+      ? process.env.NEXT_PUBLIC_BASIC_PRICE_ID
+      : process.env.NEXT_PUBLIC_PRO_PRICE_ID;
 
   async function updateUserSubscription() {
     try {
@@ -51,6 +51,18 @@ const SubscriptionForm = ({
       } else {
         console.error("Error making request:", error.message);
       }
+    }
+  }
+
+  async function grantAllAppAccess() {
+    try {
+      const response = await axios.post("/api/apps/grantAllAppAccess", {
+        userId: user?.id,
+      });
+      console.log("Granted all app access:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error granting all app access:", error.message);
     }
   }
 
@@ -84,7 +96,8 @@ const SubscriptionForm = ({
         setSuccessMessage(
           "Subscription successful! Welcome to the " + plan + " plan."
         );
-        updateUserSubscription();
+        await updateUserSubscription();
+        await grantAllAppAccess();
         onSuccess();
       } else {
         setErrorMessage("Subscription failed. Please try again.");

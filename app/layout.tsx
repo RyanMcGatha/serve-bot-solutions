@@ -15,7 +15,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="h-screen w-screen ">
+      <body className="h-screen w-screen bg-zinc-100 dark:bg-black ">
         <Analytics />
         <SpeedInsights />
         <AuthProvider>

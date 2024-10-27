@@ -17,7 +17,7 @@ const config: Config = {
       screens: {
         "auth-sm": "390px",
         "auth-md": "500px",
-        "auth-lg": "700px",
+        "auth-lg": "600px",
         "480": "480px",
       },
       borderRadius: {

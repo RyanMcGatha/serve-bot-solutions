@@ -101,7 +101,7 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
               ) : (
                 <CheckoutScreen
                   plan={selectedPlan}
-                  onSuccess={() => handleSetStep(1)}
+                  onSuccess={() => window.location.reload()}
                 />
               )
             ) : stepsComplete === 0 ? (
@@ -126,7 +126,12 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
                 stepsComplete === 0 ||
                 (stepsComplete === 4 && selectedPlan === "free")
               }
-              className="px-2 py-1 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm w-28"
+              className={`px-2 py-1 text-black dark:text-white border rounded-md text-sm w-28 ${
+                stepsComplete === 0 ||
+                (stepsComplete === 4 && selectedPlan === "free")
+                  ? "bg-gray-300 dark:bg-gray-700 border-gray-400"
+                  : "bg-gray-200 dark:bg-black dark:border-black border-gray-300"
+              }`}
             >
               Previous
             </button>
@@ -137,7 +142,13 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
                 (!selectedApp && stepsComplete === 2) ||
                 stepsComplete === 1
               }
-              className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28"
+              className={`text-sm px-2 py-1 rounded-md border w-28 ${
+                !selectedPlan ||
+                (!selectedApp && stepsComplete === 2) ||
+                stepsComplete === 1
+                  ? "bg-gray-300 text-black dark:bg-gray-700 dark:text-white border-gray-400"
+                  : "bg-black text-white dark:bg-white dark:text-black border-black"
+              }`}
             >
               {stepsComplete === 3 && selectedPlan === "free"
                 ? "Confirm App"

@@ -4,48 +4,55 @@ import Image from "next/image";
 
 export function Review({ selectedApp }: { selectedApp: any }) {
   return (
-    <div className="flex flex-col items-center p-8 w-full max-w-xl mx-auto text-center space-y-6">
-      <h2 className="text-3xl font-bold text-center w-full">Review</h2>
-      <p className="text-xl">You have selected {selectedApp.name}</p>
+    <div className="flex flex-col items-center p-8 w-full h-full text-center space-y-8 ">
+      <h2 className="text-4xl font-semibold text-zinc-800 dark:text-zinc-200">
+        Review Your Selection
+      </h2>
+      <p className="text-lg text-zinc-700 dark:text-zinc-300">
+        You have selected{" "}
+        <span className="font-medium text-indigo-600">{selectedApp.name}</span>
+      </p>
+
       <motion.div
         layoutId={`card-${selectedApp.title}-${selectedApp.id}`}
         key={selectedApp.id}
-        onClick={() => {
-          // setActive(card);
-        }}
-        className={`p-4 flex flex-col  rounded-xl cursor-pointer ${
-          selectedApp?.title === selectedApp.title ? "bg-indigo-600" : ""
-        }`}
+        className="p-6 bg-zinc-200 dark:bg-neutral-900 rounded-xl cursor-pointer transition duration-300 shadow-lg"
       >
-        <div className="flex gap-4 flex-col w-full">
-          <motion.div layoutId={`image-${selectedApp.title}-${selectedApp.id}`}>
+        <div className="flex flex-col items-center gap-6">
+          <motion.div
+            layoutId={`image-${selectedApp.title}-${selectedApp.id}`}
+            className="overflow-hidden rounded-lg"
+          >
             <Image
-              width={100}
-              height={100}
+              width={320}
+              height={320}
               src={selectedApp.imgUrl}
               alt={selectedApp.title}
-              className="h-60 w-full  rounded-lg object-cover object-top"
+              className="h-full w-full object-cover transition-transform duration-500 transform hover:scale-105"
             />
           </motion.div>
-          <div className="flex justify-center items-center flex-col">
+          <div className="flex flex-col items-center text-center space-y-2">
             <motion.h3
               layoutId={`title-${selectedApp.title}-${selectedApp.id}`}
-              className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left text-base"
+              className="font-semibold text-neutral-800 dark:text-neutral-200 text-xl"
             >
               {selectedApp.name}
             </motion.h3>
             <motion.p
               layoutId={`description-${selectedApp.description}-${selectedApp.id}`}
-              className="text-neutral-600 dark:text-neutral-400 text-center md:text-left text-base"
+              className="text-neutral-600 dark:text-neutral-400 text-base"
             >
               {selectedApp.title}
             </motion.p>
           </div>
         </div>
       </motion.div>
-      <p className="text-xl">Are you sure you want to add this app?</p>
-      <p className="text-sm text-gray-500">
-        This selection can not be changed on the free tier.
+
+      <p className="text-lg text-zinc-700 dark:text-zinc-300">
+        Are you sure you want to add this app?
+      </p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-300 italic">
+        This selection cannot be changed on the free tier.
       </p>
     </div>
   );

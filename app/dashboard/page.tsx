@@ -5,6 +5,7 @@ import { FocusCards } from "./components/focus-cards";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -14,16 +15,14 @@ export default function DashboardPage() {
   async function fetchUserApps() {
     try {
       const response = await axios.get("/api/apps/fetchAppsByUser", {
-        withCredentials: true, // Ensures cookies are sent with the request
+        withCredentials: true,
       });
 
       console.log(response.data); // Handle response data
       setCards(response.data);
     } catch (error: any) {
-      console.error(
-        "Error fetching user apps:",
-        error.response?.data || error.message
-      );
+    } finally {
+      setLoading(false); // Ensure loading is set to false after attempt
     }
   }
 
@@ -31,7 +30,7 @@ export default function DashboardPage() {
     if (user) {
       fetchUserApps();
     } else {
-      setLoading(false);
+      setLoading(false); // Set loading to false if user is null
     }
   }, [user]);
 
