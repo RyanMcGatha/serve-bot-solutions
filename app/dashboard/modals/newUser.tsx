@@ -1,16 +1,10 @@
 "use client";
-import { useModal } from "../components/animated-modal";
+
 import SubscriptionForm from "./SubscriptionForm";
 import axios from "axios";
 import { useAuth } from "@/app/contexts/AuthContext";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalTrigger,
-} from "../components/animated-modal";
+
 import Pricing from "./Pricing";
 import { Review } from "./review";
 
@@ -28,7 +22,6 @@ const sendDiscordNotification = async (
 };
 
 export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
-  const { open, setOpen, closeModal } = useModal();
   const { user } = useAuth();
   const [stepsComplete, setStepsComplete] = useState(0);
   const [selectedApp, setSelectedApp] = useState<any>(null);

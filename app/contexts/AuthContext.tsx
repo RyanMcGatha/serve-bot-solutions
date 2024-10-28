@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(response.data.data.user);
         router.push("/dashboard");
         await sendDiscordNotification(
-          `Signup successful for user: ${email}`,
+          `@r_mcgat Signup successful for user: ${email}`,
           process.env.NEXT_PUBLIC_NEW_USER_CHANNEL_ID || ""
         );
         return response.data;
