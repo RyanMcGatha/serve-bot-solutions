@@ -6,7 +6,7 @@ export async function GET() {
   const options = {
     client_id: process.env.GITHUB_CLIENT_ID,
     redirect_uri: process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI,
-    scope: "read:user user:email", // Scope to access user info
+    scope: "read:user user:email",
     allow_signup: "true",
   };
 

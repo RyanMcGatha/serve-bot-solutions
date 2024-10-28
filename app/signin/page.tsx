@@ -17,16 +17,14 @@ interface Error {
 
 export default function SigninPage() {
   return (
-    <HeroHighlight
-      style={{ height: "100vh", width: "100vw", overflow: "hidden" }}
-    >
-      <Nav />
+    <HeroHighlight>
+      <Nav isDashboard={false} />
 
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.25, ease: "easeInOut" }}
-        className="w-full h-[92vh] flex items-center justify-center px-2 480:px-8 auth-md:px-12 sm:px-16"
+        className="w-full h-screen flex items-center justify-center px-2 480:px-8 auth-md:px-12 sm:px-16"
       >
         <BackgroundGradient
           className=" w-full "

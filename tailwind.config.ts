@@ -11,7 +11,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "media", // Use "media" to enable dark mode based on system preference
+  darkMode: "media",
   theme: {
     extend: {
       screens: {

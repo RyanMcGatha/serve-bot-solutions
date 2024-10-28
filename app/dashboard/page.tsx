@@ -5,7 +5,7 @@ import { FocusCards } from "./components/focus-cards";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
+import { Loader } from "../components/Loader";
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -18,11 +18,11 @@ export default function DashboardPage() {
         withCredentials: true,
       });
 
-      console.log(response.data); // Handle response data
+      console.log(response.data);
       setCards(response.data);
     } catch (error: any) {
     } finally {
-      setLoading(false); // Ensure loading is set to false after attempt
+      setLoading(false);
     }
   }
 
@@ -30,18 +30,22 @@ export default function DashboardPage() {
     if (user) {
       fetchUserApps();
     } else {
-      setLoading(false); // Set loading to false if user is null
+      setLoading(false);
     }
   }, [user]);
 
   const subscription = user?.subscription;
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-full w-full p-10 overflow-hidden flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="h-full w-full overflow-hidden">
       {subscription === "NONE" ? (
         <NewUserModal
           onCompleted={() => {
@@ -50,7 +54,9 @@ export default function DashboardPage() {
           }}
         />
       ) : (
-        <FocusCards cards={cards} />
+        <div className="h-full w-full p-10">
+          <FocusCards cards={cards} />
+        </div>
       )}
     </div>
   );

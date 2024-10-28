@@ -7,7 +7,6 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function GET(req: NextRequest) {
   try {
-    // Retrieve JWT token
     const token = req.cookies.get("token")?.value;
 
     if (!token) {
@@ -17,7 +16,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Verify and decode JWT
     const { payload } = await jwtVerify(token, JWT_SECRET);
     const userId = payload.userId as string;
 
@@ -28,7 +26,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Fetch apps directly from the app table, filtering by userId in userAppAccess
     const apps = await prisma.app.findMany({
       where: {
         userAccess: {
@@ -38,11 +35,10 @@ export async function GET(req: NextRequest) {
         },
       },
       include: {
-        userAccess: true, // Include related user access if needed
+        userAccess: true,
       },
     });
 
-    // Check if any apps were found
     if (!apps.length) {
       return NextResponse.json(
         { error: "No apps found for this user" },

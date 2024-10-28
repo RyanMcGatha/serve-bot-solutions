@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -14,6 +13,17 @@ import { BubbleButton } from "@/app/components/buttons/BubbleButton";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
+
+const sendDiscordNotification = async (
+  message: string,
+  channelId: string = process.env.NEXT_PUBLIC_ERROR_CHANNEL_ID || ""
+) => {
+  try {
+    await axios.post("/api/sendDiscordMessage", { message, channelId });
+  } catch (error) {
+    console.error("Failed to send Discord notification:", error);
+  }
+};
 
 const SubscriptionForm = ({
   plan,
@@ -43,14 +53,11 @@ const SubscriptionForm = ({
       console.log("Updated user:", response.data);
       return response.data;
     } catch (error: any) {
-      if (error.response) {
-        console.error(
-          "Error updating subscription:",
-          error.response.data.error
-        );
-      } else {
-        console.error("Error making request:", error.message);
-      }
+      const errorMsg = error.response
+        ? `Error updating subscription: ${error.response.data.error}`
+        : `Error making request: ${error.message}`;
+      await sendDiscordNotification(errorMsg);
+      console.error(errorMsg);
     }
   }
 
@@ -62,7 +69,9 @@ const SubscriptionForm = ({
       console.log("Granted all app access:", response.data);
       return response.data;
     } catch (error: any) {
-      console.error("Error granting all app access:", error.message);
+      const errorMsg = `Error granting all app access: ${error.message}`;
+      await sendDiscordNotification(errorMsg);
+      console.error(errorMsg);
     }
   }
 
@@ -74,6 +83,11 @@ const SubscriptionForm = ({
     const cardElement = elements.getElement(CardElement);
 
     try {
+      await sendDiscordNotification(
+        `Subscription attempt started for user: ${email} with plan: ${plan}`,
+        process.env.NEXT_PUBLIC_SUBSCRIPTION_CHANNEL_ID || ""
+      );
+
       const { paymentMethod, error } = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement!,
@@ -82,6 +96,10 @@ const SubscriptionForm = ({
 
       if (error) {
         setErrorMessage(error.message!);
+        await sendDiscordNotification(
+          `Subscription failed for user: ${email}. Error: ${error.message}`,
+          process.env.NEXT_PUBLIC_ERROR_CHANNEL_ID || ""
+        );
         return;
       }
 
@@ -92,27 +110,41 @@ const SubscriptionForm = ({
       });
 
       if (response.data.success) {
-        // Handle successful subscription
         setSuccessMessage(
           "Subscription successful! Welcome to the " + plan + " plan."
         );
         await updateUserSubscription();
         await grantAllAppAccess();
         onSuccess();
+
+        await sendDiscordNotification(
+          `Subscription successful for user: ${email}. Plan: ${plan}`,
+          process.env.NEXT_PUBLIC_SUBSCRIPTION_CHANNEL_ID || ""
+        );
       } else {
+        const errorMsg = `Subscription process failed for user: ${email}.`;
         setErrorMessage("Subscription failed. Please try again.");
+        await sendDiscordNotification(
+          errorMsg,
+          process.env.NEXT_PUBLIC_ERROR_CHANNEL_ID || ""
+        );
       }
     } catch (error: any) {
+      const errorMsg = `Subscription error for user: ${email}. Error: ${error.message}`;
       setErrorMessage(error.message);
+      await sendDiscordNotification(
+        errorMsg,
+        process.env.NEXT_PUBLIC_ERROR_CHANNEL_ID || ""
+      );
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="text-zinc-700 dark:text-zinc-300 te p-5 border border-zinc-700 dark:border-zinc-400 rounded-lg shadow-md w-full"
+      className="text-zinc-700 dark:text-zinc-300 p-5 border border-zinc-700 dark:border-zinc-400 rounded-lg shadow-md w-full"
     >
-      <h2 className=" mb-6 text-4xl font-semibold">Subscribe to {plan} Plan</h2>
+      <h2 className="mb-6 text-4xl font-semibold">Subscribe to {plan} Plan</h2>
 
       <div className="mb-3">
         <label htmlFor="email-input" className="mb-1.5 block ">

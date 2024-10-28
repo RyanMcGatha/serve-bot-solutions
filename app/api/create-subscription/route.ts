@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
     const { email, paymentMethodId, priceId } = await req.json();
     if (!priceId) throw new Error("Price ID is required");
 
-    // Check if customer already exists
     const existingCustomers = await stripe.customers.list({
       email,
       limit: 1,
@@ -18,7 +17,6 @@ export async function POST(req: NextRequest) {
     let customer = existingCustomers.data[0];
 
     if (!customer) {
-      // Create a new customer if one doesn't exist
       customer = await stripe.customers.create({
         email,
         payment_method: paymentMethodId,
@@ -28,14 +26,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Create the subscription
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
       items: [{ price: priceId }],
       expand: ["latest_invoice.payment_intent"],
     });
 
-    // Check payment status
     const latestInvoice = subscription.latest_invoice;
 
     if (

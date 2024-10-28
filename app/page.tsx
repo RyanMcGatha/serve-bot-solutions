@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { HeroHighlight } from "./components/ui/hero-highlight";
 import { NeuHero } from "./components/NeuHero";
 import { HeroGrid } from "./components/ui/HeroGrid";
@@ -11,40 +10,48 @@ import { ContainerScroll } from "./components/ui/container-scroll-animation";
 import Image from "next/image";
 import { MaxWidthWrapper } from "./components/utils/MaxWidthWrapper";
 import { FadeIn } from "./components/fadein";
+import axios from "axios";
+
+const sendDiscordNotification = async (message: string) => {
+  try {
+    await axios.post("/api/sendDiscordMessage", {
+      message,
+      channelId: process.env.NEXT_PUBLIC_LANDING_PAGE_VISIT_CHANNEL_ID || "",
+    });
+  } catch (error) {
+    console.error("Failed to send Discord notification:", error);
+  }
+};
 
 export default function Home() {
-  const [isSmallViewport, setIsSmallViewport] = useState(false);
-
   useEffect(() => {
-    const handleResize = () => {
-      setIsSmallViewport(window.innerWidth < 1024);
-    };
+    sendDiscordNotification("A user visited the landing page.");
 
-    handleResize(); // Set initial state based on current viewport
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
+    const hash = window.location.hash;
+    if (hash) {
+      document
+        .getElementById(hash.replace("#", ""))
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
   }, []);
 
   return (
-    <HeroHighlight
-      style={{
-        height: isSmallViewport ? "680vh" : "420vh",
-        width: "100vw",
-        overflow: "hidden",
-      }}
-    >
+    <HeroHighlight>
       <FadeIn>
-        <Nav />
+        <Nav isDashboard={false} />
       </FadeIn>
-      <FadeIn>
+      <FadeIn className="pt-40 md:pt-20">
         <Hero />
       </FadeIn>
       <FadeIn>
-        <HeroGrid />
+        <section id="features">
+          <HeroGrid />
+        </section>
       </FadeIn>
       <FadeIn>
-        <Pricing />
+        <section id="pricing">
+          <Pricing />
+        </section>
       </FadeIn>
     </HeroHighlight>
   );
@@ -53,7 +60,7 @@ export default function Home() {
 export function Hero() {
   return (
     <FadeIn>
-      <MaxWidthWrapper className="relative z-20 flex flex-col items-center pb-12 pt-16 ">
+      <MaxWidthWrapper className="relative z-20 flex flex-col items-center pb-12 pt-16">
         <ContainerScroll titleComponent={<NeuHero />}>
           <Image
             src={`/hero.png`}

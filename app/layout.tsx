@@ -5,7 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { useState } from "react";
 import { ToastProvider } from "@/app/contexts/ToastContext";
-import { ModalProvider } from "./dashboard/components/animated-modal";
+
 export default function RootLayout({
   children,
 }: {
@@ -15,13 +15,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="h-screen w-screen bg-zinc-100 dark:bg-black ">
+      <body className="min-h-screen min-w-screen bg-zinc-50 dark:bg-zinc-950 group text-zinc-700 dark:text-zinc-300 ">
         <Analytics />
         <SpeedInsights />
         <AuthProvider>
-          <ModalProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </ModalProvider>
+          <ToastProvider>{children}</ToastProvider>
         </AuthProvider>
       </body>
     </html>

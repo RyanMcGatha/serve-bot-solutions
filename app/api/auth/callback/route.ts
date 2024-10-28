@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Import Prisma client
+import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
@@ -10,7 +10,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect("/signin");
   }
 
-  // Exchange the authorization code for access token
   const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -32,19 +31,16 @@ export async function GET(request: Request) {
 
   const { access_token } = tokenData;
 
-  // Fetch user information from Google
   const userResponse = await fetch(
     `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
   );
   const userData = await userResponse.json();
 
-  // Check if the user already exists in the database
   let user = await prisma.user.findUnique({
     where: { email: userData.email },
   });
 
   if (!user) {
-    // Create a new user if they don't exist
     user = await prisma.user.create({
       data: {
         email: userData.email,
@@ -61,7 +57,6 @@ export async function GET(request: Request) {
       },
     });
   } else {
-    // If user exists, check if there's an associated Google account
     const account = await prisma.account.findUnique({
       where: {
         provider_providerAccountId: {
@@ -72,7 +67,6 @@ export async function GET(request: Request) {
     });
 
     if (!account) {
-      // Create a new Google account if it doesn't exist
       await prisma.account.create({
         data: {
           provider: "google",
@@ -83,7 +77,6 @@ export async function GET(request: Request) {
         },
       });
     } else {
-      // Optionally, update the access and refresh tokens if the account exists
       await prisma.account.update({
         where: {
           provider_providerAccountId: {
@@ -99,7 +92,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Create a JWT token for the session
   const token = jwt.sign(
     {
       userId: user.id,
@@ -111,12 +103,11 @@ export async function GET(request: Request) {
     { expiresIn: "1h" }
   );
 
-  // Set the token in a cookie
   const response = NextResponse.redirect("https://servebot.tech/dashboard");
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60, // 1 hour
+    maxAge: 60 * 60,
     path: "/",
   });
 

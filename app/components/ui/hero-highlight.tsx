@@ -7,12 +7,10 @@ export const HeroHighlight = ({
   children,
   className,
   containerClassName,
-  style,
 }: {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
-  style?: React.CSSProperties;
 }) => {
   let mouseX = useMotionValue(0);
   let mouseY = useMotionValue(0);
@@ -30,19 +28,12 @@ export const HeroHighlight = ({
   }
   return (
     <div
-      className={cn(
-        "bg-zinc-50 dark:bg-zinc-950 group text-zinc-700 dark:text-zinc-300",
-        containerClassName
-      )}
-      style={style}
+      className={cn("relative h-full w-full group", containerClassName)}
       onMouseMove={handleMouseMove}
     >
-      <div
-        className="absolute inse bg-dot-thick-zinc-300 dark:bg-dot-thick-zinc-800  pointer-events-none h-full"
-        style={style}
-      />
+      <div className="absolute inset-0 bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800  pointer-events-none" />
       <motion.div
-        className="pointer-events-none bg-dot-thick-indigo-500 dark:bg-dot-thick-indigo-500   absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100 "
+        className="pointer-events-none bg-dot-thick-indigo-500 dark:bg-dot-thick-indigo-500   absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
@@ -58,14 +49,14 @@ export const HeroHighlight = ({
               transparent 100%
             )
           `,
-          ...style,
         }}
       />
 
-      <div className={cn("relative z-40", className)}>{children}</div>
+      <div className={cn("relative z-20", className)}>{children}</div>
     </div>
   );
 };
+
 export const Highlight = ({
   children,
   className,

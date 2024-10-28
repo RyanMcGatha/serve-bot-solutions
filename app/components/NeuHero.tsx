@@ -12,7 +12,7 @@ export const NeuHero = () => {
   const router = useRouter();
   return (
     <FadeIn>
-      <div className="flex flex-col items-center pb-6 sm:pb-8 md:pb-10 lg:pb-12 mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
+      <div className="flex flex-col items-center text-center pb-6  ">
         <GlowingChip>Sign up for free 🎉</GlowingChip>
 
         <h1 className="my-3 text-center font-bold text-zinc-900 dark:text-zinc-100 text-xl auth-sm:text-2xl auth-md:text-3xl auth-lg:text-4xl md:text-5xl lg:text-7xl leading-tight">

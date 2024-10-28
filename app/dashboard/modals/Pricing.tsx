@@ -14,41 +14,37 @@ export default function Pricing({
   const [showCheckout, setShowCheckout] = useState(false);
 
   return (
-    <section className="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-950 p-4 w-full h-full overflow-y-auto ">
-      <>
-        <Heading selected={selected} setSelected={setSelected} />
-        <PriceCards
-          selected={selected}
-          free={free}
-          basic={basic}
-          pro={pro}
-          setSelectedPlan={(plan: any) => setSelectedPlan(plan)}
-          setFree={(value) => {
-            setFree(value);
-            setBasic(false);
-            setPro(false);
-            setShowCheckout(true);
-            setSelectedPlan("free");
-          }}
-          setBasic={(value) => {
-            setFree(false);
-            setBasic(value);
-            setPro(false);
-            setShowCheckout(true);
-            setSelectedPlan("basic");
-          }}
-          setPro={(value) => {
-            setFree(false);
-            setBasic(false);
-            setPro(value);
-            setShowCheckout(true);
-            setSelectedPlan("pro");
-          }}
-        />
-        <TopLeftCircle />
-        <BottomRightCircle />
-      </>
-    </section>
+    <div className="text-zinc-700 dark:text-zinc-300 bg-zinc-100 p-10 dark:bg-zinc-950 w-full overflow-y-auto ">
+      <Heading selected={selected} setSelected={setSelected} />
+      <PriceCards
+        selected={selected}
+        free={free}
+        basic={basic}
+        pro={pro}
+        setSelectedPlan={(plan: any) => setSelectedPlan(plan)}
+        setFree={(value) => {
+          setFree(value);
+          setBasic(false);
+          setPro(false);
+          setShowCheckout(true);
+          setSelectedPlan("free");
+        }}
+        setBasic={(value) => {
+          setFree(false);
+          setBasic(value);
+          setPro(false);
+          setShowCheckout(true);
+          setSelectedPlan("basic");
+        }}
+        setPro={(value) => {
+          setFree(false);
+          setBasic(false);
+          setPro(value);
+          setShowCheckout(true);
+          setSelectedPlan("pro");
+        }}
+      />
+    </div>
   );
 }
 

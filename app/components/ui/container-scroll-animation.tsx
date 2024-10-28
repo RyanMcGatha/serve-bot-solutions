@@ -35,10 +35,7 @@ export const ContainerScroll = ({
   const translate = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
   return (
-    <div
-      className="  flex items-center justify-between  relative  "
-      ref={containerRef}
-    >
+    <div className="   relative  " ref={containerRef}>
       <div
         className=" w-full relative"
         style={{
@@ -60,7 +57,7 @@ export const Header = ({ translate, titleComponent }: any) => {
       style={{
         translateY: translate,
       }}
-      className="div mx-auto mb-20"
+      className="w-full mx-auto mb-20"
     >
       {titleComponent}
     </motion.div>
@@ -85,7 +82,7 @@ export const Card = ({
         boxShadow:
           "0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003",
       }}
-      className="max-w-5xl -mt-12 mx-auto h-[30rem] md:h-[40rem] w-full border-4 border-[#6C6C6C] p-2 bg-[#222222] rounded-[30px] shadow-2xl"
+      className="max-w-5xl -mt-12  h-[30rem] md:h-[40rem] w-full border-4 border-[#6C6C6C] p-2 bg-[#222222] rounded-[30px] shadow-2xl"
     >
       <div className=" h-full w-full  overflow-hidden rounded-2xl bg-gray-100 dark:bg-zinc-900   ">
         {children}

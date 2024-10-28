@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Assuming prisma is exported from this path
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update the user's subscription tier
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { subscription: subscriptionTier },

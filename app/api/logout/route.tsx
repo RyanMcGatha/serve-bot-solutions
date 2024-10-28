@@ -2,15 +2,13 @@ import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
-    // Create a response object
     const response = NextResponse.json({ message: "Logout successful" });
 
-    // Clear the token cookie by setting it with a past expiry date
     response.cookies.set("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Secure only in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      expires: new Date(0), // Expire the cookie immediately
+      expires: new Date(0),
     });
 
     return response;

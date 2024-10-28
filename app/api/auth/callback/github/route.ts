@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Import Prisma client
+import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
@@ -10,7 +10,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect("/signin");
   }
 
-  // Exchange the authorization code for an access token
   const tokenResponse = await fetch(
     "https://github.com/login/oauth/access_token",
     {
@@ -35,7 +34,6 @@ export async function GET(request: Request) {
 
   const { access_token } = tokenData;
 
-  // Fetch user information from GitHub
   const userResponse = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${access_token}`,
@@ -43,7 +41,6 @@ export async function GET(request: Request) {
   });
   const userData = await userResponse.json();
 
-  // Fetch user's email (since it's a separate API call in GitHub)
   const emailResponse = await fetch("https://api.github.com/user/emails", {
     headers: {
       Authorization: `Bearer ${access_token}`,
@@ -58,13 +55,11 @@ export async function GET(request: Request) {
     return NextResponse.redirect("/signin?error=NoEmail");
   }
 
-  // Check if the user already exists in the database
   let user = await prisma.user.findUnique({
     where: { email: primaryEmail },
   });
 
   if (!user) {
-    // Create a new user if they don't exist
     user = await prisma.user.create({
       data: {
         email: primaryEmail,
@@ -80,7 +75,6 @@ export async function GET(request: Request) {
       },
     });
   } else {
-    // If user exists, check if there's an associated GitHub account
     const account = await prisma.account.findUnique({
       where: {
         provider_providerAccountId: {
@@ -91,7 +85,6 @@ export async function GET(request: Request) {
     });
 
     if (!account) {
-      // Create a new GitHub account if it doesn't exist
       await prisma.account.create({
         data: {
           provider: "github",
@@ -101,7 +94,6 @@ export async function GET(request: Request) {
         },
       });
     } else {
-      // Optionally, update the access token if the account exists
       await prisma.account.update({
         where: {
           provider_providerAccountId: {
@@ -116,7 +108,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Create a JWT token for the session
   const token = jwt.sign(
     {
       userId: user.id,
@@ -128,12 +119,11 @@ export async function GET(request: Request) {
     { expiresIn: "1h" }
   );
 
-  // Set the token in a cookie
   const response = NextResponse.redirect("https://servebot.tech/dashboard");
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60, // 1 hour
+    maxAge: 60 * 60,
     path: "/",
   });
 

@@ -7,7 +7,7 @@ export const Pricing = () => {
   const [selected, setSelected] = useState<ToggleOptionsType>("annual");
   return (
     <div className=" ">
-      <section className="mx-auto max-w-7xl px-2  md:px-4">
+      <section className="mx-auto max-w-7xl px-2 pb-20  md:px-4">
         <h2 className="mx-auto mb-4 max-w-2xl text-center text-4xl font-bold leading-[1.15] md:text-6xl md:leading-[1.15]">
           Pricing
         </h2>

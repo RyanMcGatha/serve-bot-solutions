@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+
 export const Card = React.memo(
   ({
     card,
@@ -24,8 +25,8 @@ export const Card = React.memo(
         onMouseEnter={() => setHovered(index)}
         onMouseLeave={() => setHovered(null)}
         className={cn(
-          "rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out",
-          hovered !== null && hovered !== index && "blur-sm scale-[0.98]"
+          "rounded-lg relative overflow-hidden h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 w-full transition-all duration-300 ease-out",
+          hovered !== null && hovered !== index && "blur-sm scale-95"
         )}
       >
         <Image
@@ -36,11 +37,11 @@ export const Card = React.memo(
         />
         <div
           className={cn(
-            "absolute inset-0 bg-black/50 flex items-end py-8 px-4 transition-opacity duration-300",
+            "absolute inset-0 flex items-end p-4 sm:p-6 md:p-8 transition-opacity duration-300",
             hovered === index ? "opacity-100" : "opacity-0"
           )}
         >
-          <div className="text-xl md:text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-200">
+          <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-200">
             {card.name}
           </div>
         </div>
@@ -61,7 +62,7 @@ export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl mx-auto md:px-8 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 px-4 sm:px-6 md:px-8 lg:px-10 w-full">
       {cards.map((card, index) => (
         <Card
           key={card.id}

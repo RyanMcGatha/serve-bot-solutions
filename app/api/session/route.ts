@@ -15,7 +15,7 @@ interface Response {
 
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value; // Extract the string value from the RequestCookie
+    const token = req.cookies.get("token")?.value;
 
     if (!token) {
       const response: Response = { success: false, error: "No token provided" };
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     const response: Response = { success: true, data: { user } };
     return NextResponse.json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     const response: Response = {
       success: false,

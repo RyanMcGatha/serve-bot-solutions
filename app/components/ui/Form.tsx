@@ -60,73 +60,67 @@ export const Or = () => {
 export const Email = ({ isSignup }: { isSignup: boolean }) => {
   const toast = useToast();
   const { login, signup } = useAuth();
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await login(email, password);
+    const res = await (isSignup
+      ? signup(email, password)
+      : login(email, password));
     if (res?.error) {
       toast.error(res.error);
     }
   };
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
 
-    const res = await signup(email, password);
-    if (res?.error) {
-      toast.error(res.error);
-    }
-  };
   return (
     <form
-      onSubmit={isSignup ? handleSignup : handleSubmit}
-      className="text-zinc-700 dark:text-zinc-300"
+      onSubmit={handleSubmit}
+      className="text-zinc-700 dark:text-zinc-300 space-y-5"
     >
-      <div className="mb-3">
-        <label htmlFor="email-input" className="mb-1.5 block ">
+      <div>
+        <label htmlFor="email-input" className="block mb-2">
           Email
         </label>
         <input
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          autoComplete="email"
-          required
           id="email-input"
           type="email"
-          placeholder="jon_doe@example.com"
-          className="w-full rounded-md border   px-3 py-2 placeholder-zinc-600border-zinc-700 dark:border-zinc-400 dark:bg-dorkz bg-creamy-11 dark:placeholder-zinc-400 ring-1 ring-transparent transition-shadow focus:outline-0 focus:ring-zinc-600 dark:focus:ring-zinc-100"
+          placeholder="example@example.com"
+          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-zinc-600 dark:focus:ring-zinc-100 border-zinc-700 dark:border-zinc-400 bg-creamy-11 dark:bg-dorkz placeholder-zinc-600 dark:placeholder-zinc-400 transition-all"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
       </div>
-      <div className="mb-6">
-        <div className="mb-1.5 flex items-end justify-between">
-          <label htmlFor="password-input" className="block ">
-            Password
-          </label>
-          <a href="#" className="text-sm  underline">
+      <div>
+        <div className="flex justify-between mb-2">
+          <label htmlFor="password-input">Password</label>
+          <a
+            href="#"
+            className="text-sm underline hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          >
             Forgot?
           </a>
         </div>
         <input
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
           id="password-input"
-          autoComplete="current-password"
-          required
           type="password"
           placeholder="••••••••••••"
-          className="w-full rounded-md border border-zinc-700 dark:border-zinc-400 dark:bg-dorkz bg-creamy-11  px-3 py-2 placeholder-zinc-600 dark:placeholder-zinc-400 ring-1 ring-transparent transition-shadow focus:outline-0 focus:ring-zinc-600 dark:focus:ring-zinc-100"
+          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-zinc-600 dark:focus:ring-zinc-100 border-zinc-700 dark:border-zinc-400 bg-creamy-11 dark:bg-dorkz placeholder-zinc-600 dark:placeholder-zinc-400 transition-all"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
       </div>
-
-      <BubbleButton type="submit" className="flex w-full justify-center py-3">
-        {isSignup ? "Sign up" : "Sign in"}
+      <BubbleButton
+        type="submit"
+        className="flex w-full justify-center py-3 mt-4"
+      >
+        {isSignup ? "Sign Up" : "Sign In"}
       </BubbleButton>
     </form>
   );
 };
-
 export const Terms = () => (
   <div className="w-full text-center">
     <p className="mt-9 text-sm ">
@@ -147,9 +141,10 @@ export const NavLogo = () => {
     <Image
       src="/Serve-bot.svg"
       alt="ServeBot logo"
-      width={15}
-      height={0}
-      className="dark:invert object-contain static auth-sm:fixed auth-sm:top-12 auth-sm:left-16 mt-5 m-auto scale-[10] auth-sm:scale-[11] 480:left-20 auth-md:top-14 auth-md:scale-[13]"
+      width={15} // adjust based on desired logo size
+      height={10} // adjust based on desired logo size
+      loading="eager"
+      className="dark:invert object-contain static auth-sm:absolute auth-sm:top-12 auth-sm:left-16 mt-5 m-auto scale-[10] auth-sm:scale-[11] 480:left-20 auth-md:top-14 auth-md:scale-[13]"
       style={{ clipPath: "inset(20% 10% 21% 10%)" }}
     />
   );

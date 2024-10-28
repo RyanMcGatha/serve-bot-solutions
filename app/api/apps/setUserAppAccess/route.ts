@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
   try {
     const { userId, appId } = await req.json();
 
-    // Fetch the user and their subscription tier
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { appAccess: true },
@@ -17,7 +16,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check if the app exists
     const app = await prisma.app.findUnique({
       where: { id: appId },
     });
@@ -26,7 +24,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "App not found" }, { status: 404 });
     }
 
-    // Check if the user already has access to the app
     const existingAccess = user.appAccess.find(
       (access) => access.appId === appId
     );
@@ -36,8 +33,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Determine access based on the user's subscription tier
 
     if (user.subscription === SubscriptionTier.FREE && !app.isFree) {
       return NextResponse.json(
@@ -53,7 +48,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create new user app access record
     const userAppAccess = await prisma.userAppAccess.create({
       data: { userId, appId },
     });

@@ -16,6 +16,16 @@ import { Review } from "./review";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { FreeTier } from "./freeTier";
+const sendDiscordNotification = async (
+  message: string,
+  channelId = process.env.NEXT_PUBLIC_ERROR_CHANNEL_ID || ""
+) => {
+  try {
+    await axios.post("/api/sendDiscordMessage", { message, channelId });
+  } catch (error) {
+    console.error("Failed to send Discord notification:", error);
+  }
+};
 
 export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
   const { open, setOpen, closeModal } = useModal();
@@ -33,6 +43,11 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
     }
 
     setStepsComplete(newStep);
+    await sendDiscordNotification(
+      `User ${user?.email} moved to step ${newStep} with plan: ${selectedPlan}`,
+      process.env.NEXT_PUBLIC_STEP_UPDATE_CHANNEL_ID || ""
+    );
+
     if (newStep === 4) {
       const res = await addUserAppAccess(selectedApp.id);
       if (res?.status === 200) {
@@ -50,16 +65,17 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
         subscriptionTier,
       });
       console.log("Updated user:", response.data);
+      await sendDiscordNotification(
+        `User ${user?.email} successfully subscribed to ${subscriptionTier} plan.`,
+        process.env.NEXT_PUBLIC_SUBSCRIPTION_CHANNEL_ID || ""
+      );
       return response.data;
     } catch (error: any) {
-      if (error.response) {
-        console.error(
-          "Error updating subscription:",
-          error.response.data.error
-        );
-      } else {
-        console.error("Error making request:", error.message);
-      }
+      const errorMsg = error.response
+        ? `Error updating subscription for user ${user?.email}: ${error.response.data.error}`
+        : `Error making request: ${error.message}`;
+      await sendDiscordNotification(errorMsg);
+      console.error(errorMsg);
     }
   }
 
@@ -71,92 +87,87 @@ export function NewUserModal({ onCompleted }: { onCompleted: () => void }) {
       });
 
       console.log("User App Access created:", response);
+      await sendDiscordNotification(
+        `App access granted to user ${user?.email} for app ID: ${appId}.`,
+        process.env.NEXT_PUBLIC_APP_ACCESS_CHANNEL_ID || ""
+      );
       return response;
     } catch (error: any) {
-      if (error.response) {
-        console.error("Error:", error.response.data.error);
-      } else {
-        console.error("Request failed:", error.message);
-      }
+      const errorMsg = error.response
+        ? `Error granting app access to user ${user?.email}: ${error.response.data.error}`
+        : `Request failed: ${error.message}`;
+      await sendDiscordNotification(errorMsg);
+      console.error(errorMsg);
     }
   }
 
   return (
-    <div className="py-40 flex items-center justify-center">
-      <Modal>
-        <ModalTrigger className="bg-black dark:bg-white dark:text-black text-white flex justify-center group/modal-btn">
-          <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500">
-            Book your flight
-          </span>
-          <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-white z-20">
-            ✈️
-          </div>
-        </ModalTrigger>
-        <ModalBody>
-          <ModalContent>
-            {selectedPlan && stepsComplete === 1 ? (
-              selectedPlan === "free" ? (
-                (setStepsComplete(2),
-                (<FreeTier onSelect={(app) => setSelectedApp(app)} />))
-              ) : (
-                <CheckoutScreen
-                  plan={selectedPlan}
-                  onSuccess={() => window.location.reload()}
-                />
-              )
-            ) : stepsComplete === 0 ? (
-              <Pricing setSelectedPlan={setSelectedPlan} />
-            ) : stepsComplete === 2 ? (
-              <FreeTier onSelect={(app) => setSelectedApp(app)} />
-            ) : stepsComplete === 3 ? (
-              <Review selectedApp={selectedApp} />
-            ) : null}
-          </ModalContent>
-          <ModalFooter className="gap-4 z-50">
-            <Steps numSteps={numSteps} stepsComplete={stepsComplete} />
-            <button
-              onClick={() => {
-                handleSetStep(-1);
-                setSelectedApp(null);
-                if (stepsComplete === 2 && selectedPlan === "free") {
-                  setStepsComplete(0);
-                }
-              }}
-              disabled={
-                stepsComplete === 0 ||
-                (stepsComplete === 4 && selectedPlan === "free")
-              }
-              className={`px-2 py-1 text-black dark:text-white border rounded-md text-sm w-28 ${
-                stepsComplete === 0 ||
-                (stepsComplete === 4 && selectedPlan === "free")
-                  ? "bg-gray-300 dark:bg-gray-700 border-gray-400"
-                  : "bg-gray-200 dark:bg-black dark:border-black border-gray-300"
-              }`}
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => handleSetStep(1)}
-              disabled={
-                !selectedPlan ||
-                (!selectedApp && stepsComplete === 2) ||
-                stepsComplete === 1
-              }
-              className={`text-sm px-2 py-1 rounded-md border w-28 ${
-                !selectedPlan ||
-                (!selectedApp && stepsComplete === 2) ||
-                stepsComplete === 1
-                  ? "bg-gray-300 text-black dark:bg-gray-700 dark:text-white border-gray-400"
-                  : "bg-black text-white dark:bg-white dark:text-black border-black"
-              }`}
-            >
-              {stepsComplete === 3 && selectedPlan === "free"
-                ? "Confirm App"
-                : "Next"}
-            </button>
-          </ModalFooter>
-        </ModalBody>
-      </Modal>
+    <div className="h-full w-full flex flex-col items-center">
+      <div className="h-full w-full">
+        {selectedPlan && stepsComplete === 1 ? (
+          selectedPlan === "free" ? (
+            (setStepsComplete(2),
+            (<FreeTier onSelect={(app) => setSelectedApp(app)} />))
+          ) : (
+            <CheckoutScreen
+              plan={selectedPlan}
+              onSuccess={() => window.location.reload()}
+            />
+          )
+        ) : stepsComplete === 0 ? (
+          <Pricing setSelectedPlan={setSelectedPlan} />
+        ) : stepsComplete === 2 ? (
+          <FreeTier onSelect={(app) => setSelectedApp(app)} />
+        ) : stepsComplete === 3 ? (
+          <Review selectedApp={selectedApp} />
+        ) : null}
+      </div>
+
+      {/* Footer */}
+      <div className="flex gap-4 z-50 justify-end p-4 border-t fixed bottom-0 bg-zinc-50 dark:bg-zinc-950 w-full left-0">
+        <Steps numSteps={numSteps} stepsComplete={stepsComplete} />
+        <button
+          onClick={() => {
+            handleSetStep(-1);
+            setSelectedApp(null);
+            setSelectedPlan(null);
+            if (stepsComplete === 2 && selectedPlan === "free") {
+              setStepsComplete(0);
+            }
+          }}
+          disabled={
+            stepsComplete === 0 ||
+            (stepsComplete === 4 && selectedPlan === "free")
+          }
+          className={`px-2 py-1 text-black dark:text-white border rounded-md text-sm w-28 ${
+            stepsComplete === 0 ||
+            (stepsComplete === 4 && selectedPlan === "free")
+              ? "bg-gray-300 dark:bg-gray-700 border-gray-400"
+              : "bg-gray-200 dark:bg-black dark:border-black border-gray-300"
+          }`}
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => handleSetStep(1)}
+          disabled={
+            !selectedPlan ||
+            (!selectedApp && stepsComplete === 2) ||
+            stepsComplete === 1
+          }
+          className={`text-sm px-2 py-1 rounded-md border w-28 ${
+            !selectedPlan ||
+            (!selectedApp && stepsComplete === 2) ||
+            stepsComplete === 1
+              ? "bg-gray-300 text-black dark:bg-gray-700 dark:text-white border-gray-400"
+              : "bg-black text-white dark:bg-white dark:text-black border-black"
+          }`}
+        >
+          {stepsComplete === 3 && selectedPlan === "free"
+            ? "Confirm App"
+            : "Next"}
+        </button>
+      </div>
     </div>
   );
 }
